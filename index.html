@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Wedding Celebration | Gokulakannan & Dharshini</title>
+    <!-- Google Fonts for Traditional Luxury Look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700;900&family=Great+Vibes&family=Marcellus&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti Library for Flower Garland & Petal Showering Effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --gold: #f3ce70;
+            --deep-gold: #c6932b;
+            --rich-blue-dark: #030b18;
+            --rich-blue-main: #071935;
+            --rich-blue-light: #0d2a58;
+            --cream: #ffffff;
+            --border-gold: rgba(243, 206, 112, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--rich-blue-dark);
+            color: var(--cream);
+            font-family: 'Marcellus', serif;
+            overflow-x: hidden;
+            position: relative;
+            line-height: 1.8;
+        }
+
+        /* -------------------------------------------------------------
+           CONTINUOUS FLOATING BACKGROUND HEARTS
+        ------------------------------------------------------------- */
+        #hearts-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .heart-particle {
+            position: absolute;
+            color: rgba(243, 206, 112, 0.35);
+            font-size: 1.2rem;
+            animation: floatUp 7s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) scale(0.8) rotate(0deg);
+                opacity: 0;
+            }
+            20% { opacity: 0.7; }
+            80% { opacity: 0.7; }
+            100% {
+                transform: translateY(-10vh) scale(1.3) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* -------------------------------------------------------------
+           1. THREE-FOLD SHEET / RIBBON INTERACTIVE OVERLAY
+        ------------------------------------------------------------- */
+        #trifold-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle, var(--rich-blue-light) 0%, var(--rich-blue-dark) 100%);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1500px;
+            transition: opacity 1.2s ease, visibility 1.2s ease;
+        }
+
+        .trifold-card {
+            width: 360px;
+            height: 520px;
+            position: relative;
+            transform-style: preserve-3d;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            border-radius: 8px;
+        }
+
+        .panel-center {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #091f3d, #041024);
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            z-index: 1;
+        }
+
+        .panel-left {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, #0d2a58, #051329);
+            border: 2px solid var(--gold);
+            border-right: 1px solid var(--gold);
+            border-radius: 8px 0 0 8px;
+            transform-origin: left center;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+        }
+
+        .panel-right {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(225deg, #0d2a58, #051329);
+            border: 2px solid var(--gold);
+            border-left: 1px solid var(--gold);
+            border-radius: 0 8px 8px 0;
+            transform-origin: right center;
+            transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        }
+
+        .ribbon-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            cursor: pointer;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .ribbon-seal:hover {
+            transform: translate(-50%, -50%) scale(1.08);
+        }
+
+        .ribbon-band {
+            width: 360px;
+            height: 45px;
+            background: linear-gradient(45deg, var(--gold), #fff0be, var(--deep-gold));
+            position: absolute;
+            top: 50%;
+            left: -180px;
+            transform: translateY(-50%);
+            box-shadow: 0 0 15px var(--gold);
+            z-index: 4;
+        }
+
+        .ribbon-knot {
+            width: 85px;
+            height: 85px;
+            background: radial-gradient(circle, #fff0be 0%, var(--gold) 70%, var(--deep-gold) 100%);
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 25px var(--gold);
+            animation: pulseRibbon 2s infinite;
+        }
+
+        @keyframes pulseRibbon {
+            0% { box-shadow: 0 0 15px var(--gold); }
+            50% { box-shadow: 0 0 30px #ffffff; }
+            100% { box-shadow: 0 0 15px var(--gold); }
+        }
+
+        .unfolded .panel-left { transform: rotateY(-160deg); }
+        .unfolded .panel-right { transform: rotateY(160deg); }
+        .unfolded .ribbon-seal, .unfolded .ribbon-band {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        /* -------------------------------------------------------------
+           2. MAIN INVITATION CONTENT
+        ------------------------------------------------------------- */
+        .hero-background-section {
+            position: relative;
+            min-height: 100vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 1.5rem;
+            overflow: hidden;
+        }
+
+        .hero-background-layer {
+            position: absolute;
+            top: -5%;
+            left: -5%;
+            width: 110%;
+            height: 110%;
+            background-image: linear-gradient(to bottom, rgba(3, 11, 24, 0.65), rgba(3, 11, 24, 0.92)), 
+                              url('assets/krishann.webp'); 
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            animation: swingMotion 7s ease-in-out infinite alternate;
+        }
+
+        @keyframes swingMotion {
+            0% { transform: rotate(-1.5deg) scale(1.02); }
+            100% { transform: rotate(1.5deg) scale(1.05); }
+        }
+
+        .gold-border-frame {
+            position: relative;
+            z-index: 2;
+            border: 2px solid var(--gold);
+            padding: 3.5rem 2.5rem;
+            border-radius: 15px;
+            background: rgba(7, 25, 53, 0.82);
+            backdrop-filter: blur(10px);
+            max-width: 850px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), inset 0 0 25px rgba(243, 206, 112, 0.15);
+        }
+
+        .sub-header {
+            font-size: 1.1rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--gold);
+            margin-bottom: 1.2rem;
+        }
+
+        .main-title {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.2rem;
+            color: var(--gold);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            margin-bottom: 2rem;
+            line-height: 1.4;
+        }
+
+        .couple-names {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4.8rem;
+            color: #ffffff;
+            text-shadow: 0 0 15px var(--gold);
+            margin: 1.5rem 0 2rem 0;
+            line-height: 1.2;
+        }
+
+        .invitation-text {
+            font-size: 1.25rem;
+            line-height: 2;
+            margin-bottom: 2.5rem;
+            color: #f1f5f9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* -------------------------------------------------------------
+           3. UNcropped RESPONSIVE CARICATURE SHOWCASE
+        ------------------------------------------------------------- */
+        .caricature-section {
+            background: linear-gradient(180deg, var(--rich-blue-dark) 0%, var(--rich-blue-main) 50%, var(--rich-blue-dark) 100%);
+            padding: 6rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border-gold);
+            border-bottom: 1px solid var(--border-gold);
+            position: relative;
+            z-index: 2;
+        }
+
+        .caricature-frame {
+            max-width: 600px; /* Responsive maximum width */
+            width: 90%;
+            margin: 2.5rem auto;
+            border: 6px solid var(--gold);
+            border-radius: 20px;
+            box-shadow: 0 0 35px rgba(243, 206, 112, 0.35);
+            overflow: hidden;
+            background: #040e1f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .caricature-frame img {
+            width: 100%;
+            height: auto; /* Natural original image height without cropping */
+            display: block;
+            object-fit: contain; /* Preserves entire image naturally */
+        }
+
+        /* -------------------------------------------------------------
+           4. PROGRAM & VENUES GRID
+        ------------------------------------------------------------- */
+        .events-section {
+            padding: 6rem 1.5rem;
+            max-width: 1050px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-heading {
+            font-family: 'Cinzel Decorative', serif;
+            text-align: center;
+            font-size: 2.4rem;
+            color: var(--gold);
+            margin-bottom: 3.5rem;
+            text-shadow: 0 0 10px rgba(243, 206, 112, 0.2);
+            line-height: 1.4;
+        }
+
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .event-card {
+            background: linear-gradient(145deg, rgba(13, 42, 88, 0.7), rgba(4, 16, 36, 0.85));
+            border: 1px solid var(--gold);
+            padding: 3rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(243, 206, 112, 0.25);
+        }
+
+        .event-card h3 {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--gold);
+            font-size: 1.7rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .event-card p {
+            margin-bottom: 0.8rem;
+            font-size: 1.05rem;
+            line-height: 1.8;
+        }
+
+        .feast-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            background: rgba(243, 206, 112, 0.15);
+            border: 1px dashed var(--gold);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--gold);
+        }
+
+        .map-btn, .rsvp-trigger-btn {
+            display: inline-block;
+            margin-top: 1.8rem;
+            padding: 0.8rem 2rem;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            border-radius: 25px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: transparent;
+            font-weight: bold;
+            font-size: 0.95rem;
+        }
+
+        .map-btn:hover, .rsvp-trigger-btn:hover {
+            background-color: var(--gold);
+            color: var(--rich-blue-dark);
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        /* Countdown Display */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .count-box {
+            background: rgba(3, 11, 24, 0.85);
+            border: 1px solid var(--gold);
+            padding: 1.2rem;
+            border-radius: 10px;
+            min-width: 85px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .count-box span {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--gold);
+            display: block;
+        }
+
+        /* -------------------------------------------------------------
+           5. WITH BEST COMPLIMENTS SECTION
+        ------------------------------------------------------------- */
+        .compliments-section {
+            background: rgba(7, 25, 53, 0.5);
+            padding: 4rem 1.5rem;
+            text-align: center;
+            border-top: 1px solid var(--border-gold);
+            border-bottom: 1px solid var(--border-gold);
+            position: relative;
+            z-index: 2;
+        }
+
+        .compliments-section h4 {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--gold);
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
+
+        .compliments-section p {
+            font-size: 1.1rem;
+            color: var(--cream);
+            font-style: italic;
+        }
+
+        /* -------------------------------------------------------------
+           6. RSVP MODAL FORM
+        ------------------------------------------------------------- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.88);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .rsvp-form-card {
+            background: var(--rich-blue-main);
+            border: 2px solid var(--gold);
+            padding: 2.8rem 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0,0,0,0.9);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--gold);
+            font-size: 1.6rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.85rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid var(--gold);
+            color: #fff;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        /* -------------------------------------------------------------
+           7. FLOATING VOICE MESSAGE BUTTON
+        ------------------------------------------------------------- */
+        .floating-voice-widget {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(7, 25, 53, 0.92);
+            border: 2px solid var(--gold);
+            padding: 8px 18px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        .voice-play-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gold);
+            color: var(--rich-blue-dark);
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .voice-label {
+            font-size: 0.85rem;
+            color: var(--cream);
+            font-weight: bold;
+        }
+
+        /* Footer Credit */
+        footer {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            border-top: 1px solid var(--border-gold);
+            background-color: var(--rich-blue-dark);
+            color: var(--cream);
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        footer span {
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        @media (max-width: 600px) {
+            .trifold-card { width: 300px; height: 460px; }
+            .couple-names { font-size: 3.4rem; }
+            .main-title { font-size: 1.6rem; }
+            .gold-border-frame { padding: 2.5rem 1.2rem; }
+            .countdown-container { gap: 0.5rem; }
+            .count-box { min-width: 60px; padding: 0.5rem; }
+            .count-box span { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CONTINUOUS FLOATING HEARTS CONTAINER -->
+    <div id="hearts-container"></div>
+
+    <!-- 1. TRIFOLD UNFOLDING INVITATION OVERLAY -->
+    <div id="trifold-overlay">
+        <div class="trifold-card" id="trifoldCard">
+            <div class="panel-center">
+                <i class="fas fa-heart" style="font-size: 2.5rem; color: var(--gold); margin-bottom: 1.2rem;"></i>
+                <h2 style="font-family: 'Great Vibes', cursive; font-size: 2.4rem; color: var(--gold); line-height: 1.3;">Gokulakannan & Dharshini</h2>
+                <p style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; margin-top: 10px; color: var(--cream);">Wedding Invitation</p>
+            </div>
+
+            <div class="panel-left"></div>
+            <div class="panel-right"></div>
+
+            <div class="ribbon-band"></div>
+            <div class="ribbon-seal" onclick="unfoldTrifold()">
+                <div class="ribbon-knot">
+                    <i class="fas fa-hand-pointer" style="color: var(--rich-blue-dark); font-size: 1.4rem;"></i>
+                    <span style="font-size: 0.65rem; font-weight: bold; color: var(--rich-blue-dark); text-transform: uppercase; margin-top: 2px;">Touch Here</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUDIO FILES -->
+    <audio id="wedding-music" loop>
+        <source src="assets/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="voice-note-audio">
+        <source src="assets/vc.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- HERO SECTION WITH MOVING SWING BACKGROUND -->
+    <section class="hero-background-section">
+        <div class="hero-background-layer"></div>
+
+        <div class="gold-border-frame">
+            <div class="sub-header">You are cordially invited to</div>
+            <div class="main-title">THE WEDDING & RECEPTION OF</div>
+            
+            <div class="couple-names">Gokulakannan & Dharshini</div>
+            
+            <div class="invitation-text">
+                Your presence will make our day truly special! We solicit your gracious presence and blessings on the sacred occasion of our Marriage and Reception.
+            </div>
+
+            <!-- RSVP Trigger -->
+            <button class="rsvp-trigger-btn" onclick="toggleRSVPModal(true)">
+                <i class="fas fa-envelope-open-text"></i> Click to Send Invitation Reply
+            </button>
+        </div>
+    </section>
+
+    <!-- CARICATURE SHOWCASE -->
+    <section class="caricature-section">
+        <h2 class="section-heading">Gokulakannan & Dharshini</h2>
+        
+        <div class="caricature-frame">
+            <img src="assets/image.png" alt="Gokulakannan & Dharshini Caricature">
+        </div>
+    </section>
+
+    <!-- PROGRAM & VENUES -->
+    <section class="events-section">
+        <h2 class="section-heading">Program & Venues</h2>
+        
+        <div class="events-grid">
+            <!-- Event 1: Reception -->
+            <div class="event-card">
+                <h3>RECEPTION</h3>
+                <p><i class="far fa-calendar-alt" style="color: var(--gold); margin-right: 8px;"></i> <strong>Date:</strong> 30 / 08 / 2026</p>
+                <p><i class="far fa-clock" style="color: var(--gold); margin-right: 8px;"></i> <strong>Time:</strong> 06:00 PM onwards</p>
+                <p style="margin-top: 1.2rem;"><i class="fas fa-map-marker-alt" style="color: var(--gold); margin-right: 8px;"></i> <strong>Venue:</strong><br>Kalamegam Kalyana Mandapam,<br>Bhavani Main Road, Navappatti, Mettur.</p>
+                
+                <div class="feast-tag">
+                    <i class="fas fa-utensils"></i> Followed by Dinner
+                </div>
+
+                <a href="https://maps.app.goo.gl/JjJiReDXvJnStuE2A" target="_blank" class="map-btn">
+                    <i class="fas fa-location-dot"></i> Mandabam Location Link
+                </a>
+            </div>
+
+            <!-- Event 2: Wedding -->
+            <div class="event-card">
+                <h3>WEDDING (MUHURTHAM)</h3>
+                <p><i class="far fa-calendar-alt" style="color: var(--gold); margin-right: 8px;"></i> <strong>Date:</strong> 31 / 08 / 2026</p>
+                <p><i class="far fa-clock" style="color: var(--gold); margin-right: 8px;"></i> <strong>Time:</strong> 04:00 AM to 05:00 AM</p>
+                <p style="margin-top: 1.2rem;"><i class="fas fa-map-marker-alt" style="color: var(--gold); margin-right: 8px;"></i> <strong>Venue:</strong><br>Thangamalai Murugan Kovil,<br>P.N.Patti, Thangamapuri Pattinam, Mettur.</p>
+                
+                <div class="feast-tag">
+                    <i class="fas fa-utensils"></i> Followed by Grand Festive Lunch
+                </div>
+
+                <a href="https://share.google/xn5gTPLwNxXwoiKGy" target="_blank" class="map-btn">
+                    <i class="fas fa-location-dot"></i> Muhurtham Location Link
+                </a>
+            </div>
+        </div>
+
+        <!-- Real-Time Countdown targeting August 30, 2026 -->
+        <div class="countdown-container">
+            <div class="count-box"><span id="days">00</span>Days</div>
+            <div class="count-box"><span id="hours">00</span>Hours</div>
+            <div class="count-box"><span id="minutes">00</span>Mins</div>
+            <div class="count-box"><span id="seconds">00</span>Secs</div>
+        </div>
+    </section>
+
+    <!-- WITH BEST COMPLIMENTS SECTION -->
+    <section class="compliments-section">
+        <h4>With Best Compliments From</h4>
+        <p>Near & Dear Friends, Relatives, and Family Members</p>
+    </section>
+
+    <!-- RSVP MODAL -->
+    <div class="modal-overlay" id="rsvpModal">
+        <div class="rsvp-form-card">
+            <span class="close-modal" onclick="toggleRSVPModal(false)">&times;</span>
+            <h3 style="font-family: 'Cinzel Decorative', serif; color: var(--gold); margin-bottom: 1.5rem; text-align: center;">Invitation Reply</h3>
+            
+            <form onsubmit="handleRSVPSubmit(event)">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" required placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label>Attendance Status</label>
+                    <select required>
+                        <option value="yes">Will Attend Reception & Wedding</option>
+                        <option value="reception">Will Attend Reception Only</option>
+                        <option value="wedding">Will Attend Wedding Only</option>
+                        <option value="no">Unable to Attend</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Wishes & Blessings</label>
+                    <textarea rows="3" placeholder="Leave your blessings for Gokulakannan & Dharshini..."></textarea>
+                </div>
+                <button type="submit" class="rsvp-trigger-btn" style="width: 100%; font-weight: bold;">
+                    Send Blessing
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FLOATING VOICE MESSAGE BUTTON -->
+    <div class="floating-voice-widget">
+        <button class="voice-play-btn" id="voiceToggleBtn" onclick="toggleVoiceNote()">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <div class="voice-label">
+            <span id="voiceStatusText">Listen Voice Message</span>
+        </div>
+    </div>
+
+    <!-- FOOTER CREDIT -->
+    <footer>
+        <p>Designed by <span>Lakshana.V</span></p>
+    </footer>
+
+    <script>
+        // GENERATE FLOATING HEARTS ACROSS SCREEN AT ALL TIMES
+        function createFloatingHearts() {
+            const container = document.getElementById('hearts-container');
+            for(let i = 0; i < 20; i++) {
+                const heart = document.createElement('i');
+                heart.className = 'fas fa-heart heart-particle';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 7 + 's';
+                heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                container.appendChild(heart);
+            }
+        }
+        createFloatingHearts();
+
+        // TRIFOLD UNFOLDING CONTROLLER
+        function unfoldTrifold() {
+            const card = document.getElementById('trifoldCard');
+            const overlay = document.getElementById('trifold-overlay');
+            
+            card.classList.add('unfolded');
+
+            const music = document.getElementById('wedding-music');
+            music.play().catch(e => console.log("Audio waiting for user interaction"));
+            triggerGarlandShower();
+
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.visibility = 'hidden';
+            }, 1200);
+        }
+
+        // PETAL & FLOWER GARLAND SHOWER
+        function triggerGarlandShower() {
+            var duration = 4.5 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 6,
+                    angle: 60,
+                    spread: 60,
+                    origin: { x: 0 },
+                    colors: ['#e63946', '#ffb703', '#f3ce70', '#ffffff']
+                });
+                confetti({
+                    particleCount: 6,
+                    angle: 120,
+                    spread: 60,
+                    origin: { x: 1 },
+                    colors: ['#e63946', '#ffb703', '#f3ce70', '#ffffff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+
+        function toggleRSVPModal(show) {
+            const modal = document.getElementById('rsvpModal');
+            if(show) {
+                modal.classList.add('active');
+            } else {
+                modal.classList.remove('active');
+            }
+        }
+
+        function handleRSVPSubmit(event) {
+            event.preventDefault();
+            alert("Thank you for your blessings! We look forward to seeing you.");
+            toggleRSVPModal(false);
+            triggerGarlandShower();
+        }
+
+        let isVoicePlaying = false;
+        function toggleVoiceNote() {
+            const voiceAudio = document.getElementById('voice-note-audio');
+            const voiceBtn = document.getElementById('voiceToggleBtn');
+            const voiceText = document.getElementById('voiceStatusText');
+
+            if (!isVoicePlaying) {
+                voiceAudio.play();
+                voiceBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                voiceText.innerText = 'Playing Message...';
+                isVoicePlaying = true;
+            } else {
+                voiceAudio.pause();
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                voiceText.innerText = 'Listen Voice Message';
+                isVoicePlaying = false;
+            }
+
+            voiceAudio.onended = function() {
+                voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+                voiceText.innerText = 'Listen Voice Message';
+                isVoicePlaying = false;
+            };
+        }
+
+        // Countdown timer targeting August 30, 2026
+        const weddingDate = new Date("August 30, 2026 18:00:00").getTime();
+
+        setInterval(function() {
+            const now = new Date().getTime();
+            const difference = weddingDate - now;
+
+            if(difference > 0) {
+                document.getElementById("days").innerText = Math.floor(difference / (1000 * 60 * 60 * 24));
+                document.getElementById("hours").innerText = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                document.getElementById("minutes").innerText = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                document.getElementById("seconds").innerText = Math.floor((difference % (1000 * 60)) / 1000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
